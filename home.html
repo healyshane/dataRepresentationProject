@@ -1,0 +1,333 @@
+<html>
+    <head>
+        <title>Data Representation Project</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+        <style>
+        body{
+	        font-family: arial;
+	        background-color: lightgrey;
+	    }
+
+        .myHeader {
+            display: flex;
+            justify-content: space-between;
+            
+            background: grey;
+            padding: 10px;
+        }
+
+
+        .name{
+            font-size: 350%;
+            font-family: impact;
+            font-weight: bold;
+            text-shadow: 4px 2px black;
+            color:#0073BD;
+            padding: 15px;
+        }
+
+        .center {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 50%;
+        }
+        </style>
+
+    </head>
+
+    <body>
+        <div class = "myHeader">
+                <!--AJAX logo, ref. https://www.google.com/imgres?imgurl=https%3A%2F%2Fi.pinimg.com%2Foriginals%2Fe4%2Fe9%2Ffc%2Fe4e9fc856f0ee78ce86696e5729ab1d2.png&imgrefurl=https%3A%2F%2Fwww.pinterest.es%2Fpin%2F565272190721175134%2F&tbnid=AC7wfHMOhjQEaM&vet=12ahUKEwjWt9CoyI_mAhVWXBUIHXBMAeUQMygAegUIARDdAQ..i&docid=sqd6cgoyFa3WSM&w=326&h=171&q=ajax%20web&hl=en-GB&ved=2ahUKEwjWt9CoyI_mAhVWXBUIHXBMAeUQMygAegUIARDdAQ -->
+                <div><img height = "100px" src="images/AJAX.png" title = "AJAX Logo"/></div>
+                <div class = "name"> DATA REPRESENTATION </div>
+                <div><img height = "100px" src="images/restful.png" title = "Restful API"/></div>
+        </div>
+
+        <h2>Web Application Project</h2>
+        <ul>
+            <li>Create Flask Server</li>
+            <li>REST API to perform CRUD Operations</li>
+            <li>Link to Database</li>
+            <li>Web interface, using AJAX calls, to perform CRUD Operations</li>		
+        </ul>
+
+
+            <!-- <button onclick="getAllAjax()">GET ALL</button>
+            <button onclick="updateBatchAjax()">UPDATE</button>
+            <button onclick="deleteBatchAjax(1)">DELETE</button>
+            <button onclick="createBatchAjax()">CREATE</button>
+            <button onclick="getPlot()">PLOT</button>
+
+            <div id="output">Diddddly</div> -->
+    
+    <br/>
+    
+    
+        <h1>Batch Viewer</h1>
+        <div> <button id="showCreateButton" onclick="showCreate()">Create</button></div>
+        <div>
+            <table class="table" id="batchTable">
+                <tr>
+                    <th>id</th>
+                    <th>Batch</th>
+                    <th>Yield</th>
+                    <th>Time</th>
+                    <th>Update</th>
+                    <th>Delete</th>
+                </tr>
+                
+            </table>
+        </div>
+        <div id='createUpdateForm' style="display: none">
+                <h2><span id="createLabel">Create a</span> <span id="updateLabel">update</span> Batch</h2>
+                <input type=hidden name="id"/>
+                Batch <input type="text" name="Batch"/> <br/>
+                Yield  <input type="number" name="Yield"/> <br/>
+                Time <input type="number" name="Time"/> <br/>
+                <span><button id="doCreateButton" onclick="doCreate()">Create</button></span>
+                <span><button id="doUpdateButton" onclick="doUpdate()">Update</button></span>
+        </div>
+
+            
+
+        <div id="createPlot">
+                <img src="http://127.0.0.1:5000/plot" onerror=hostid() class="center"/>
+
+        </div>
+
+    </body>
+    
+
+    <script>
+        function hostid(){
+            var src = window.location.origin + "/plot"
+        }
+
+        function showCreate(){
+            document.getElementById('showCreateButton').style.display="none"
+            document.getElementById('batchTable').style.display="none"
+            document.getElementById('createUpdateForm').style.display="block"
+
+            document.getElementById('createLabel').style.display="inline"
+            document.getElementById('updateLabel').style.display="none"
+
+            document.getElementById('doCreateButton').style.display="block"
+            document.getElementById('doUpdateButton').style.display="none"
+        }
+
+        function showViewAll(){
+            document.getElementById('showCreateButton').style.display="block"
+            document.getElementById('batchTable').style.display="block"
+            document.getElementById('createUpdateForm').style.display="none"
+        }
+
+        function showUpdate(buttonElement){
+            document.getElementById('showCreateButton').style.display="none"
+            document.getElementById('batchTable').style.display="none"
+            document.getElementById('createUpdateForm').style.display="block"
+
+            document.getElementById('createLabel').style.display="none"
+            document.getElementById('updateLabel').style.display="inline"
+
+            document.getElementById('doCreateButton').style.display="none"
+            document.getElementById('doUpdateButton').style.display="block"
+
+
+            var rowElement = buttonElement.parentNode.parentNode
+            // these is a way of finding the closest <tr> which would safer, closest()
+            
+            var batch = getBatchFromRow(rowElement)
+            populateFormWithBatch(batch)
+          }
+
+        function doCreate(){
+            var form = document.getElementById('createUpdateForm')
+
+            var batch = {}
+
+            batch.Batch = form.querySelector('input[name="Batch"]').value
+            batch.Yield = form.querySelector('input[name="Yield"]').value
+            batch.Time = form.querySelector('input[name="Time"]').value
+            console.log(JSON.stringify(batch))
+            createBatchAjax(batch)
+            
+            
+        }
+
+        function doUpdate(){
+            var batch = getBatchFromForm();
+            var rowElement = document.getElementById(batch.id);
+            updateBatchAjax(batch);
+            setBatchInRow(rowElement,batch);
+        
+            clearForm();
+            showViewAll();
+        }
+
+        function doDelete(r){
+            var tableElement = document.getElementById('batchTable');
+            var rowElement = r.parentNode.parentNode;
+            var index = rowElement.rowIndex;
+            deleteBatchAjax(rowElement.getAttribute("id"));
+            tableElement.deleteRow(index);
+        }
+    
+        function addBatchToTable(batch){
+            var tableElement = document.getElementById('batchTable')
+            var rowElement = tableElement.insertRow(-1)
+            rowElement.setAttribute('id',batch.id)
+            var cell1 = rowElement.insertCell(0);
+            cell1.innerHTML = batch.id
+            var cell2 = rowElement.insertCell(1);
+            cell2.innerHTML = batch.batch
+            var cell3 = rowElement.insertCell(2);
+            cell3.innerHTML = batch.yield
+            var cell4 = rowElement.insertCell(3);
+            cell4.innerHTML = batch.time
+            var cell5 = rowElement.insertCell(4);
+            cell5.innerHTML = '<button onclick="showUpdate(this)">Update</button>'
+            var cell6 = rowElement.insertCell(5);
+            cell6.innerHTML = '<button onclick=doDelete(this)>delete</button>'
+        }
+
+        function clearForm(){
+            var form = document.getElementById('createUpdateForm')
+
+
+            form.querySelector('input[name="Batch"]').value=''
+            form.querySelector('input[name="Yield"]').value=''
+            form.querySelector('input[name="Time"]').value=''
+        }
+
+        function getBatchFromRow(rowElement){
+            var batch ={}
+            batch.id  = rowElement.getAttribute('id')
+            batch.Batch = rowElement.cells[1].firstChild.textContent
+            batch.Yield = parseInt(rowElement.cells[2].firstChild.textContent,10)
+            batch.Time = parseInt(rowElement.cells[3].firstChild.textContent,10)
+            return batch
+        }
+
+        function setBatchInRow(rowElement, batch){
+            rowElement.cells[0].firstChild.textContent= batch.id  
+            rowElement.cells[1].firstChild.textContent= batch.Batch 
+            rowElement.cells[2].firstChild.textContent= batch.Yield
+            rowElement.cells[3].firstChild.textContent= batch.Time
+        }
+
+        function populateFormWithBatch(batch){
+            var form = document.getElementById('createUpdateForm')
+            form.querySelector('input[name="id"]').disabled = true
+
+            form.querySelector('input[name="id"]').value  = batch.id
+            form.querySelector('input[name="Batch"]').value= batch.Batch
+            form.querySelector('input[name="Yield"]').value= batch.Yield
+            form.querySelector('input[name="Time"]').value= batch.Time
+            return batch      
+        }
+
+        function getBatchFromForm(){
+            var form = document.getElementById('createUpdateForm')
+            var batch = {}
+            batch.id = form.querySelector('input[name="id"]').value
+            batch.Batch = form.querySelector('input[name="Batch"]').value
+            batch.Yield = parseInt(form.querySelector('input[name="Yield"]').value,10)
+            batch.Time = parseInt(form.querySelector('input[name="Time"]').value,10)
+
+            console.log(JSON.stringify(batch))
+            return batch
+        }
+
+
+        function getAllAjax(){
+            host = window.location.origin
+            $.ajax({
+                "url": host="/batches",
+                "method":"GET",
+                "data": "",
+                "dataType": "JSON",
+                "success": function(result){
+                    for (batch of result){
+                        addBatchToTable(batch);
+                    }
+                },
+                "error": function(xhr,status,error){
+                    console.log("error: "+status+" msg:"+error);
+                }
+            });
+        }   
+
+        
+        function createBatchAjax(batch){
+        //var batch = { "Batch":"192K8756", "yield": 38, "time": 69}
+            host = window.location.origin
+            $.ajax({
+                "url": host+"/batches",
+                "method":"POST",
+                "data":JSON.stringify(batch),
+                "dataType": "JSON",
+                contentType: "application/json; charset=utf-8",
+                "success":function(result){
+                    batch.id = result.id
+                    addBatchToTable(batch)
+                    clearForm()
+                    showViewAll()          
+                    
+                },
+                "error":function(xhr,status,error){
+                    console.log("error: "+status+" msg:"+error);
+                }
+            });
+        }
+
+        function updateBatchAjax(batch){
+       // var batch = { "id":1, "Batch":"192J1234", "yield": 338, "time": 42 }
+        //console.log(JSON.stringify(batch));
+            host = window.location.origin
+            $.ajax({
+                "url": host+"/batches/"+encodeURI(batch.id),
+                "method":"PUT",
+                "data":JSON.stringify(batch),
+                "dataType": "JSON",
+                contentType: "application/json; charset=utf-8",
+                "success":function(result){
+                // console.log(result);
+                    
+                },
+                "error":function(xhr,status,error){
+                    console.log("error: "+status+" msg:"+error);
+                }
+            });
+        }
+
+
+    function deleteBatchAjax(id){
+        host = window.location.origin
+        $.ajax({
+            "url": host+"/batches/"+encodeURI(id),
+            "method":"DELETE",
+            "data":"",
+            "dataType": "JSON",
+            contentType: "application/json; charset=utf-8",
+            "success":function(result){
+                //console.log(result);
+                  
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+    }
+
+    getAllAjax();
+    // getPlot();
+
+       
+    </script>
+
+
+</html>
