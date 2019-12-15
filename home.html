@@ -53,15 +53,6 @@
             <li>Link to Database</li>
             <li>Web interface, using AJAX calls, to perform CRUD Operations</li>		
         </ul>
-
-
-            <!-- <button onclick="getAllAjax()">GET ALL</button>
-            <button onclick="updateBatchAjax()">UPDATE</button>
-            <button onclick="deleteBatchAjax(1)">DELETE</button>
-            <button onclick="createBatchAjax()">CREATE</button>
-            <button onclick="getPlot()">PLOT</button>
-
-            <div id="output">Diddddly</div> -->
     
     <br/>
     
@@ -101,7 +92,6 @@
     <script>
 
         var img = document.createElement("img");
-        // img.size = ("2000","800")
         img.src = window.location.origin + "/plot";
         var src = document.getElementById("createPlot");
         src.appendChild(img);
@@ -142,7 +132,7 @@
 
 
             var rowElement = buttonElement.parentNode.parentNode
-            // these is a way of finding the closest <tr> which would safer, closest()
+           
             
             var batch = getBatchFromRow(rowElement)
             populateFormWithBatch(batch)
@@ -328,7 +318,7 @@
     }
 
     getAllAjax();
-    // getPlot();
+
 
        
     </script>
