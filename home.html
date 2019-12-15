@@ -14,7 +14,6 @@
         .myHeader {
             display: flex;
             justify-content: space-between;
-            
             background: grey;
             padding: 10px;
         }
@@ -94,18 +93,23 @@
 
             
 
-        <div id="createPlot">
-                <img src="http://127.0.0.1:5000/plot" onerror=hostid() class="center"/>
-
-        </div>
+        <div id="createPlot" class = "center"></div>
 
     </body>
     
 
     <script>
-        function hostid(){
-            var src = window.location.origin + "/plot"
-        }
+
+        var img = document.createElement("img");
+        // img.size = ("2000","800")
+        img.src = window.location.origin + "/plot";
+        var src = document.getElementById("createPlot");
+        src.appendChild(img);
+
+        // function hostid(){
+        //     var src = window.location.origin + "/plot"
+        //     return src
+        // }
 
         function showCreate(){
             document.getElementById('showCreateButton').style.display="none"
